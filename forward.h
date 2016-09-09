@@ -152,7 +152,16 @@ static inline int msg_send_buffer(struct dest_info* dst, char* buf, int len,
 		if (unlikely(dst->send_flags.f & SND_F_FORCE_SOCKET
 				&& dst->send_sock)) {
 			local_addr = dst->send_sock->su;
+#ifdef TCP_REUSEPORT                                                                                                                                                                                                                                                       
+			LM_DBG("sending to: %s, force_socket=%d, send_sock=%p\n", 
+ 					su2a(&dst->to,sizeof(struct sockaddr_in)),
+ 					(dst->send_flags.f & SND_F_FORCE_SOCKET),
+ 					dst->send_sock);
+
+			su_setport(&local_addr, dst->send_sock->port_no);
+#else                                                                                                                                                                                                                                                                      
 			su_setport(&local_addr, 0); /* any local port will do */
+#endif 
 			from = &local_addr;
 		}
 
@@ -212,7 +221,16 @@ static inline int msg_send_buffer(struct dest_info* dst, char* buf, int len,
 			if (unlikely((dst->send_flags.f & SND_F_FORCE_SOCKET) &&
 						dst->send_sock)) {
 				local_addr=dst->send_sock->su;
+#ifdef TCP_REUSEPORT                                                                                                                                                                                                                                                       
+				LM_DBG("sending to: %s, force_socket=%d, send_sock=%p\n", 
+ 						su2a(&dst->to,sizeof(struct sockaddr_in)),
+ 						(dst->send_flags.f & SND_F_FORCE_SOCKET),
+ 						dst->send_sock);
+
+				su_setport(&local_addr, dst->send_sock->port_no);
+#else                                                                                                                                                                                                                                                                      
 				su_setport(&local_addr, 0); /* any local port will do */
+#endif 
 				from=&local_addr;
 			}
 			if (unlikely(tcp_send(dst, from, outb.s, outb.len)<0)){
@@ -232,7 +250,16 @@ static inline int msg_send_buffer(struct dest_info* dst, char* buf, int len,
 			if (unlikely((dst->send_flags.f & SND_F_FORCE_SOCKET) &&
 						dst->send_sock)) {
 				local_addr=dst->send_sock->su;
+#ifdef TCP_REUSEPORT                                                                                                                                                                                                                                                       
+				LM_DBG("sending to: %s, force_socket=%d, send_sock=%p\n", 
+ 						su2a(&dst->to,sizeof(struct sockaddr_in)),
+ 						(dst->send_flags.f & SND_F_FORCE_SOCKET),
+ 						dst->send_sock);
+
+				su_setport(&local_addr, dst->send_sock->port_no);
+#else                                                                                                                                                                                                                                                                      
 				su_setport(&local_addr, 0); /* any local port will do */
+#endif 
 				from=&local_addr;
 			}
 			if (unlikely(tcp_send(dst, from, outb.s, outb.len)<0)){
